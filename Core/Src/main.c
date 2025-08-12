@@ -75,6 +75,9 @@ typedef enum {
 #define MAX_VELO_RPM 15
 char state = 'i';
 
+uint16_t ledTimer = 0;
+bool led = false;
+
 uint32_t lastPrintTime = 0;
 uint32_t printInterval = 200;
 
@@ -179,9 +182,25 @@ int main(void)
 		  // Send over UART using interrupt
 		  HAL_UART_Transmit_IT(&huart1, (uint8_t*)msg, len);
 	  }
-	  /* USER CODE END WHILE */
 
-	  /* USER CODE BEGIN 3 */
+	  // LED loop to check board status
+	  ledTimer ++;
+	  if(ledTimer > 200){
+		  ledTimer = 0;
+		  led = !led;
+		  if(led){
+			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		  }else{
+			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+		  }
+	  }
+
+	  // limits loop speed
+	  HAL_Delay(1);
+
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
